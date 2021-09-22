@@ -24,7 +24,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated, permission_classes
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from sendfile import sendfile
@@ -286,7 +286,7 @@ class DjangoFilterInspector(CoreAPICompatInspector):
 @method_decorator(name='update', decorator=swagger_auto_schema(operation_summary='Method updates a task by id'))
 @method_decorator(name='destroy', decorator=swagger_auto_schema(operation_summary='Method deletes a specific task, all attached jobs, annotations, and data'))
 @method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_summary='Methods does a partial update of chosen fields in a task'))
-class TaskViewSet(auth.TaskGetQuerySetMixin, viewsets.ModelViewSet):
+class TaskViewSet(auth.PermissionsPerMethodMixin, auth.TaskGetQuerySetMixin, viewsets.ModelViewSet):
     queryset = Task.objects.all().prefetch_related(
             "label_set__attributespec_set",
             "segment_set__job_set",
@@ -588,7 +588,8 @@ class TaskViewSet(auth.TaskGetQuerySetMixin, viewsets.ModelViewSet):
         }
     )
     @action(detail=True, methods=['GET'], serializer_class=None,
-        url_path='dataset')
+            url_path='dataset')
+    @permission_classes((IsAuthenticated, auth.AdminRolePermission))  # overrides IsAuthenticatedOrReadOnly
     def dataset_export(self, request, pk):
         db_task = self.get_object() # force to call check_object_permissions
 
