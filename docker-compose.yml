@@ -52,7 +52,10 @@ services:
       DJANGO_MODWSGI_EXTRA_ARGS: ""
       ALLOWED_HOSTS: '*'
       CVAT_REDIS_HOST: "cvat_redis"
-      CVAT_POSTGRES_HOST: "cvat_db"
+      CVAT_POSTGRES_HOST: "cvat-postgres-dev.cwp2wnvrqf7m.us-east-1.rds.amazonaws.com"
+      CVAT_POSTGRES_USER: "indus"
+      CVAT_POSTGRES_DBNAME: "postgres"
+      CVAT_POSTGRES_PASSWORD: "aHjN5rtTt9BV66"
     volumes:
       - cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
